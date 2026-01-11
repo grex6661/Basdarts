@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Basdarts - Contatore Freccette</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* ===== STILE GENERALE ===== */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: radial-gradient(circle at top, #183b18 0, #050505 55%, #000 100%);
+      color: #f5f5f5;
+      text-align: center;
+    }
+
+    .app-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .team-logo {
+      max-width: 220px;
+      width: 70%;
+      height: auto;
+      display: block;
+      margin: 0 auto 8px;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.8));
+    }
+
+    h1 {
+      margin: 4px 0 0;
+      font-size: 22px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 13px;
+      font-weight: 400;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    /* ===== CONFIGURAZIONE PARTITA ===== */
+    .config {
+      margin: 8px 0 18px 0;
+      padding: 10px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #555;
+      background: #141414;
+      color: #f5f5f5;
+      text-align: center;
+    }
+
+    input[type="number"] {
+      width: 80px;
+    }
+
+    input[type="text"] {
+      width: 120px;
+    }
+
+    /* ===== BOTTONI ===== */
+    button {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      min-width: 60px;
+      transition: transform 0.06s ease, box-shadow 0.06s ease, opacity 0.2s;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #0a84ff, #0f5bcf);
+      color: white;
+      box-shadow: 0 2px 6px rgba(10,132,255,0.5);
+    }
+
+    button.secondary {
+      background: #2b2b2b;
+      color: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+
+    button.danger {
+      background: linear-gradient(135deg, #ff3b30, #b0140b);
+      color: white;
+      box-shadow: 0 2px 6px rgba(255,59,48,0.6);
+    }
+
+    button.toggle {
+      background: #202020;
+      color: #f5f5f5;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+      min-width: 70px;
+    }
+
+    button.toggle.active {
+      background: #26ff62;
+      color: #021004;
+      box-shadow: 0 0 10px rgba(38,255,98,0.7);
+      font-weight: 600;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    /* ===== CARD GIOCATORI ===== */
+    .players {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .player-card {
+      border-radius: 16px;
+      padding: 10px 10px 12px;
+      min-width: 130px;
+      background: linear-gradient(145deg, #171717, #101010);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .player-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .player-card.active {
+      border-color: #26ff62;
+      box-shadow: 0 0 10px rgba(38,255,98,0.6);
+    }
+
+    .player-card.active::after {
+      content: "IN GIOCO";
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #26ff62;
+      color: #021004;
+    }
+
+    .player-name {
+      margin-bottom: 4px;
+      font-size: 13px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .score {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    .score-strip {
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #e23a3a, #f5f5f5, #0b5b2b);
+      margin-top: 6px;
+      opacity: 0.8;
+    }
+
+    /* ===== CONTROLLI PARTITA ===== */
+    .controls {
+      margin-top: 6px;
+      padding: 10px 10px 14px;
+      border-radius: 16px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .current-player {
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .current-player span {
+      font-weight: 600;
+      color: #26ff62;
+    }
+
+    .buttons-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .small {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    /* Sezione scelta singolo/doppio/triplo */
+    .multiplier-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      font-size: 13px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Griglia numeri 1-20 + 25 */
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+
+    .numbers-grid button {
+      padding: 6px 0;
+      font-size: 13px;
+      min-width: 0;
+    }
+
+    .numbers-grid button.special {
+      background: linear-gradient(135deg, #ffd452, #ff9f1c);
+      color: #201000;
+      font-weight: 600;
+    }
+
+    .manual-input {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .manual-input input[type="number"] {
+      width: 90px;
+    }
+
+    /* ===== PANEL CHECKOUT ===== */
+    .checkout-panel {
+      margin-top: 4px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: radial-gradient(circle at left, rgba(38,255,98,0.25), transparent 60%);
+      border: 1px solid rgba(38,255,98,0.35);
+      max-width: 100%;
+    }
+
+    .checkout-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.9;
+      margin-bottom: 2px;
+    }
+
+    .checkout-info {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .checkout-info span.double {
+      color: #26ff62;
+    }
+
+    .checkout-info span.bull {
+      color: #ffd452;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- LOGO BASDARTS -->
+    <img src="logoBasdarts.jpeg" alt="Basdarts Logo" class="team-logo">
+
+    <h1>Basdarts Scoreboard</h1>
+    <h2>Contatore freccette con checkout</h2>
+
+    <!-- Configurazione iniziale partita -->
+    <div class="config">
+      <label>
+        Giocatori:
+        <input type="number" id="numPlayers" value="2" min="2" max="4" step="1">
+      </label>
+      <label>
+        Punti iniziali:
+        <input type="number" id="startingScore" value="501" min="1" step="1">
+      </label>
+      <button class="secondary" onclick="createGame()">Nuova partita</button>
+    </div>
+
+    <!-- Contenitore giocatori -->
+    <div class="players" id="playersContainer"></div>
+
+    <!-- Sezione controlli partita -->
+    <div class="controls">
+      <div class="current-player">
+        Giocatore di turno: <span id="currentPlayerName">-</span>
+      </div>
+
+      <!-- Selettore Singolo / Doppio / Triplo -->
+      <div class="multiplier-row">
+        <span>Freccia:</span>
+        <button id="mult1" class="toggle active" onclick="setMultiplier(1)">Singolo</button>
+        <button id="mult2" class="toggle" onclick="setMultiplier(2)">Doppio</button>
+        <button id="mult3" class="toggle" onclick="setMultiplier(3)">Triplo</button>
+      </div>
+
+      <!-- Griglia numeri 1-20 + 25/Bull -->
+      <div class="numbers-grid">
+        <!-- generati anche a mano per semplicità -->
+        <button onclick="throwNumber(1)">1</button>
+        <button onclick="throwNumber(2)">2</button>
+        <button onclick="throwNumber(3)">3</button>
+        <button onclick="throwNumber(4)">4</button>
+        <button onclick="throwNumber(5)">5</button>
+        <button onclick="throwNumber(6)">6</button>
+        <button onclick="throwNumber(7)">7</button>
+
+        <button onclick="throwNumber(8)">8</button>
+        <button onclick="throwNumber(9)">9</button>
+        <button onclick="throwNumber(10)">10</button>
+        <button onclick="throwNumber(11)">11</button>
+        <button onclick="throwNumber(12)">12</button>
+        <button onclick="throwNumber(13)">13</button>
+        <button onclick="throwNumber(14)">14</button>
+
+        <button onclick="throwNumber(15)">15</button>
+        <button onclick="throwNumber(16)">16</button>
+        <button onclick="throwNumber(17)">17</button>
+        <button onclick="throwNumber(18)">18</button>
+        <button onclick="throwNumber(19)">19</button>
+        <button onclick="throwNumber(20)">20</button>
+        <button class="special" onclick="throwNumber(25)">25 / Bull</button>
+      </div>
+
+      <!-- Punteggio manuale di emergenza -->
+      <div class="manual-input">
+        <span>Punteggio turno:</span>
+        <input type="number" id="manualPoints" value="0" min="0" step="1">
+        <button class="primary" onclick="addManualPoints()">Applica</button>
+      </div>
+
+      <!-- Comandi partita -->
+      <div class="buttons-row">
+        <button class="secondary" onclick="endTurn()">Fine turno</button>
+        <button class="secondary" onclick="undoLast()">Annulla</button>
+        <button class="danger" onclick="resetGame()">Reset partita</button>
+      </div>
+
+      <!-- Checkout suggerito -->
+      <div class="checkout-panel">
+        <div class="checkout-title">Checkout suggerito (max 3 frecce, chiusura a doppio)</div>
+        <div id="checkoutInfo" class="checkout-info">
+          -
+        </div>
+      </div>
+
+      <div class="small">
+        Basdarts – Colpi al cuore, doppi sul bersaglio.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== STATO PARTITA =====
+    let players = [];           // { name, score }
+    let currentPlayerIndex = 0; // indice giocatore di turno
+    let history = [];           // per annullare l'ultima mossa
+    let currentMultiplier = 1;  // 1 = singolo, 2 = doppio, 3 = triplo
+
+    // Possibili tiri di base (per calcolo checkout)
+    const baseThrows = [];
+    for (let n = 1; n <= 20; n++) {
+      baseThrows.push({ value: n, label: n.toString() });        // singolo
+      baseThrows.push({ value: 2 * n, label: 'D' + n });         // doppio
+      baseThrows.push({ value: 3 * n, label: 'T' + n });         // triplo
+    }
+    baseThrows.push({ value: 25, label: '25' }); // singolo bull esterno
+
+    // Doppie valide per chiudere (incluso bull = 50)
+    const finishingDoubles = [];
+    for (let n = 1; n <= 20; n++) {
+      finishingDoubles.push({ value: 2 * n, label: 'D' + n });
+    }
+    finishingDoubles.push({ value: 50, label: 'Bull' });
+
+    // ===== LOGICA PARTITA =====
+
+    function createGame() {
+      const numPlayersInput = document.getElementById('numPlayers');
+      const startingScoreInput = document.getElementById('startingScore');
+
+      let numPlayers = parseInt(numPlayersInput.value, 10);
+      let startingScore = parseInt(startingScoreInput.value, 10);
+
+      if (isNaN(numPlayers) || numPlayers < 2) {
+        numPlayers = 2;
+        numPlayersInput.value = 2;
+      }
+      if (numPlayers > 4) {
+        numPlayers = 4;
+        numPlayersInput.value = 4;
+      }
+
+      if (isNaN(startingScore) || startingScore <= 0) {
+        startingScore = 501;
+        startingScoreInput.value = 501;
+      }
+
+      players = [];
+      for (let i = 0; i < numPlayers; i++) {
+        players.push({
+          name: `Giocatore ${i + 1}`,
+          score: startingScore
+        });
+      }
+
+      currentPlayerIndex = 0;
+      history = [];
+      currentMultiplier = 1;
+      updateMultiplierButtons();
+
+      renderPlayers();
+      updateUI();
+    }
+
+    function renderPlayers() {
+      const container = document.getElementById('playersContainer');
+      container.innerHTML = '';
+
+      players.forEach((player, index) => {
+        const card = document.createElement('div');
+        card.className = 'player-card';
+        card.id = 'playerCard-' + index;
+
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'player-name';
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = player.name;
+        nameInput.onchange = function () {
+          updatePlayerName(index, nameInput.value);
+        };
+
+        nameDiv.appendChild(nameInput);
+
+        const scoreDiv = document.createElement('div');
+        scoreDiv.className = 'score';
+        scoreDiv.id = 'score-' + index;
+        scoreDiv.textContent = player.score;
+
+        const strip = document.createElement('div');
+        strip.className = 'score-strip';
+
+        card.appendChild(nameDiv);
+        card.appendChild(scoreDiv);
+        card.appendChild(strip);
+
+        container.appendChild(card);
+      });
+    }
+
+    function updateUI() {
+      players.forEach((player, index) => {
+        const scoreElement = document.getElementById('score-' + index);
+        if (scoreElement) {
+          scoreElement.textContent = player.score;
+        }
+
+        const card = document.getElementById('playerCard-' + index);
+        if (card) {
+          card.classList.toggle('active', index === currentPlayerIndex);
+        }
+      });
+
+      const currentNameSpan = document.getElementById('currentPlayerName');
+      if (players.length > 0) {
+        currentNameSpan.textContent = players[currentPlayerIndex].name;
+      } else {
+        currentNameSpan.textContent = '-';
+      }
+
+      updateCheckoutSuggestion();
+    }
+
+    function updatePlayerName(index, newName) {
+      if (!newName) {
+        newName = `Giocatore ${index + 1}`;
+      }
+      players[index].name = newName;
+      if (index === currentPlayerIndex) {
+        document.getElementById('currentPlayerName').textContent = newName;
+      }
+    }
+
+    // Settaggio moltiplicatore Singolo/Doppio/Triplo
+    function setMultiplier(m) {
+      currentMultiplier = m;
+      updateMultiplierButtons();
+    }
+
+    function updateMultiplierButtons() {
+      document.getElementById('mult1').classList.toggle('active', currentMultiplier === 1);
+      document.getElementById('mult2').classList.toggle('active', currentMultiplier === 2);
+      document.getElementById('mult3').classList.toggle('active', currentMultiplier === 3);
+    }
+
+    // Clic su un numero 1-20 o 25
+    function throwNumber(n) {
+      let multiplier = currentMultiplier;
+
+      // Non esiste T25, se selezioni triplo e clicchi 25 lo tratto come singolo
+      if (n === 25 && multiplier === 3) {
+        multiplier = 1;
+      }
+
+      const points = n * multiplier;
+      addPoints(points);
+    }
+
+    // Aggiunge un punteggio al giocatore di turno (si scala dal totale)
+    function addPoints(points) {
+      if (players.length === 0) return;
+
+      points = parseInt(points, 10);
+      if (isNaN(points) || points < 0) return;
+
+      const player = players[currentPlayerIndex];
+      const oldScore = player.score;
+      const newScore = oldScore - points;
+
+      // Salviamo per Undo
+      history.push({
+        playerIndex: currentPlayerIndex,
+        oldScore: oldScore,
+        newScore: newScore
+      });
+
+      if (newScore === 0) {
+        player.score = newScore;
+        updateUI();
+        alert(player.name + ' ha vinto!');
+      } else if (newScore < 0) {
+        // bust: non valido
+        alert('Punteggio troppo alto! Non puoi andare sotto zero.');
+        history.pop(); // rimuovo l’ultimo dalla history
+      } else {
+        player.score = newScore;
+      }
+
+      updateUI();
+    }
+
+    function addManualPoints() {
+      const manualInput = document.getElementById('manualPoints');
+      const value = parseInt(manualInput.value, 10);
+      if (isNaN(value) || value <= 0) return;
+      addPoints(value);
+      manualInput.value = 0;
+    }
+
+    function endTurn() {
+      if (players.length === 0) return;
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+      updateUI();
+    }
+
+    function undoLast() {
+      const last = history.pop();
+      if (!last) return;
+
+      players[last.playerIndex].score = last.oldScore;
+      currentPlayerIndex = last.playerIndex;
+      updateUI();
+    }
+
+    function resetGame() {
+      createGame();
+    }
+
+    // ===== CHECKOUT LOGIC =====
+    function findCheckout(score) {
+      if (score < 2 || score > 170) return null;
+
+      // 1 freccia (solo doppio di chiusura)
+      for (const d of finishingDoubles) {
+        if (d.value === score) return [d.label];
+      }
+
+      // 2 frecce: base + doppio
+      for (const first of baseThrows) {
+        for (const last of finishingDoubles) {
+          if (first.value + last.value === score) {
+            return [first.label, last.label];
+          }
+        }
+      }
+
+      // 3 frecce: base + base + doppio
+      for (const first of baseThrows) {
+        for (const second of baseThrows) {
+          for (const last of finishingDoubles) {
+            if (first.value + second.value + last.value === score) {
+              return [first.label, second.label, last.label];
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    function updateCheckoutSuggestion() {
+      const checkoutDiv = document.getElementById('checkoutInfo');
+      if (!players.length) {
+        checkoutDiv.textContent = '-';
+        return;
+      }
+
+      const score = players[currentPlayerIndex].score;
+
+      if (score > 170) {
+        checkoutDiv.textContent = 'Nessun checkout in 3 frecce (double out).';
+        return;
+      }
+
+      const combo = findCheckout(score);
+      if (!combo) {
+        checkoutDiv.textContent = 'Nessun checkout in 3 frecce (double out).';
+        return;
+      }
+
+      const formatted = combo.map(part => {
+        if (part.startsWith('D') || part === 'Bull') {
+          const cls = part === 'Bull' ? 'bull' : 'double';
+          return `<span class="${cls}">${part}</span>`;
+        }
+        return part;
+      }).join(' – ');
+
+      checkoutDiv.innerHTML = formatted;
+    }
+
+    // Partita di default all’avvio
+    window.onload = function () {
+      createGame();
+    };
+  </script>
+</body>
+</html>
