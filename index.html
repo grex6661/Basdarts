@@ -5,9 +5,9 @@
   <title>Basdarts - Contatore Freccette</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
-<link rel="icon" type="image/png" sizes="32x32" href="icon-180.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
   <style>
     /* ===== STILE GENERALE ===== */
@@ -263,23 +263,34 @@
     /* Griglia numeri 1-20 + 25 */
     .numbers-grid {
       display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 4px;
       margin-top: 6px;
       margin-bottom: 4px;
     }
 
-    .numbers-grid button {
-      padding: 6px 0;
-      font-size: 13px;
-      min-width: 0;
-    }
+   .numbers-grid button {
+  padding: 14px 0;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #242424, #121212);
+  color: #fafafa;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.numbers-grid button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
 
-    .numbers-grid button.special {
-      background: linear-gradient(135deg, #ffd452, #ff9f1c);
-      color: #201000;
-      font-weight: 600;
-    }
+  .numbers-grid button.special {
+  background: linear-gradient(145deg, #ffd452, #ff9f1c);
+  color: #1a1000;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.15);
+}
 
     .manual-input {
       display: flex;
@@ -325,6 +336,14 @@
     .checkout-info span.bull {
       color: #ffd452;
     }
+@media (max-width: 480px) {
+  .numbers-grid button {
+    padding: 18px 0;
+    font-size: 22px;
+    border-radius: 14px;
+  }
+}
+
   </style>
 </head>
 <body>
