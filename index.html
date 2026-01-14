@@ -99,6 +99,14 @@
       transition: transform 0.06s ease, box-shadow 0.06s ease, opacity 0.2s;
     }
 
+    button.tapped {
+  background: linear-gradient(135deg, #26ff62, #1cb448) !important;
+  color: #021004 !important;
+  border-color: rgba(38,255,98,0.6) !important;
+  box-shadow: 0 0 10px rgba(38,255,98,0.7);
+}
+
+
     button:active {
       transform: translateY(1px);
       box-shadow: none;
@@ -393,28 +401,39 @@
       <!-- Griglia numeri 1-20 + 25/Bull -->
       <div class="numbers-grid">
         <!-- generati anche a mano per semplicità -->
-        <button onclick="throwNumber(1)">1</button>
-        <button onclick="throwNumber(2)">2</button>
-        <button onclick="throwNumber(3)">3</button>
-        <button onclick="throwNumber(4)">4</button>
-        <button onclick="throwNumber(5)">5</button>
-        <button onclick="throwNumber(6)">6</button>
-        <button onclick="throwNumber(7)">7</button>
+       <button onclick="throwNumber(1); flashButton(this)">1</button>
 
-        <button onclick="throwNumber(8)">8</button>
-        <button onclick="throwNumber(9)">9</button>
-        <button onclick="throwNumber(10)">10</button>
-        <button onclick="throwNumber(11)">11</button>
-        <button onclick="throwNumber(12)">12</button>
-        <button onclick="throwNumber(13)">13</button>
-        <button onclick="throwNumber(14)">14</button>
+      <button onclick="throwNumber(2); flashButton(this)">2</button>
 
-        <button onclick="throwNumber(15)">15</button>
-        <button onclick="throwNumber(16)">16</button>
-        <button onclick="throwNumber(17)">17</button>
-        <button onclick="throwNumber(18)">18</button>
-        <button onclick="throwNumber(19)">19</button>
-        <button onclick="throwNumber(20)">20</button>
+  <button onclick="throwNumber(3); flashButton(this)">3</button>
+            <button onclick="throwNumber(4); flashButton(this)">4</button>
+         <button onclick="throwNumber(5); flashButton(this)">5</button>
+         <button onclick="throwNumber(6); flashButton(this)">6</button>
+    <button onclick="throwNumber(7); flashButton(this)">7</button>
+
+         <button onclick="throwNumber(8); flashButton(this)">8</button>
+         <button onclick="throwNumber(9); flashButton(this)">9</button>
+         <button onclick="throwNumber(10); flashButton(this)">10</button>
+        <button onclick="throwNumber(11); flashButton(this)">11</button>
+             <button onclick="throwNumber(12); flashButton(this)">12</button>
+
+              <button onclick="throwNumber(13); flashButton(this)">13</button>
+
+             <button onclick="throwNumber(14); flashButton(this)">14</button>
+
+
+               <button onclick="throwNumber(15); flashButton(this)">15</button>
+
+                <button onclick="throwNumber(16); flashButton(this)">16</button>
+
+                <button onclick="throwNumber(17); flashButton(this)">17</button>
+
+               <button onclick="throwNumber(18); flashButton(this)">18</button>
+
+               <button onclick="throwNumber(19); flashButton(this)">19</button>
+
+               <button onclick="throwNumber(20); flashButton(this)">20</button>
+
         <button class="special" onclick="throwNumber(25)">25 / Bull</button>
       </div>
 
@@ -663,6 +682,13 @@
     function resetGame() {
       createGame();
     }
+
+function flashButton(btn) {
+  btn.classList.add('tapped');
+  setTimeout(() => {
+    btn.classList.remove('tapped');
+  }, 130); // 130ms, giusto il tempo di vedersi l’effetto
+}
 
     // ===== CHECKOUT LOGIC =====
     function findCheckout(score) {
